@@ -3,15 +3,15 @@ let canvas, canvasWidth = 700, canvasHeight = 400, lineToFollow;
 var gui;
 
 // line follower parameters
-var kp = 0.001;
+var kp = 0.5;
 var kpMin = 0.0;
 var kpMax = 1.5;
-var kpStep = 0.1;
+var kpStep = 0.01;
 
 var ka = 1.0;
 var kaMin = 0.0;
 var kaMax = 1.5;
-var kaStep = 0.1;
+var kaStep = 0.01;
 
 var myChoice = [1,2,3,4];
 
@@ -30,6 +30,9 @@ var maxOmega = 0.1;
 var endTargetError = 0.1;
 var perpendiculartRobotToLineError = 0.1;
 
+var resetRobotPositionButton;
+var isInResetRobotState = false;
+
 function setup() {
 
   canvas = createCanvas(canvasWidth, canvasHeight);
@@ -41,6 +44,10 @@ function setup() {
   defineLineButton = createButton('Define line');
   defineLineButton.position(20, canvasHeight-30);
   defineLineButton.mousePressed(defineLine);
+
+  resetRobotPositionButton = createButton('Reset robot pos');
+  resetRobotPositionButton.position(20, canvasHeight - 60);
+  resetRobotPositionButton.mousePressed(resetRobotPosition);
 
   canvas.mouseClicked(deFineLinePointsOrRobotInitialPose);
 
@@ -141,10 +148,15 @@ FollowLine.prototype.render = function(renderFirstOnly){
   pop();
 }
 
- function defineLine(){
+function defineLine(){
   isInDefineLineState = true;
   isFirstLinePointDefined = false;
   isSecondLinePointDefined = false;
+}
+
+function resetRobotPosition(){
+  isInResetRobotState = true;
+  console.log("in reset robot state");
 }
 
 function deFineLinePointsOrRobotInitialPose(){
@@ -158,7 +170,10 @@ function deFineLinePointsOrRobotInitialPose(){
       isInDefineLineState = false;
       renderFirstPointOnly = false;
     }
-  }else if(isInDefineInitialRobotPoseState){
+  }else if(isInResetRobotState){
+    robot.position.x = mouseX;
+    robot.position.y = mouseY;
+    isInResetRobotState = false;
 
   }
 }
